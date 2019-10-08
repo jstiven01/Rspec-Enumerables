@@ -65,11 +65,11 @@ module Enumerable
   end
 
   def my_inject
-    n = self[0]
+    sum = self[0]
     (self.length - 1).times do |x|
-      n = yield(self[x + 1], n)
+      sum = yield(sum, self[x + 1])
     end
-    return n
+    return sum
   end
 
 end
@@ -78,6 +78,6 @@ test = [5,3,7,4, 8, 9]
 
 test = [1,1,1,1]
 
-puts test.my_inject { |x, n|
-  n + x
+puts test.my_inject { |sum, n|
+  sum - n
 }
