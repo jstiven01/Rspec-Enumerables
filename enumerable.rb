@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module Enumerable
   def my_each
-    (self.length).times do |x|
+    length.times do |x|
       yield(self[x])
     end
   end
@@ -82,3 +84,7 @@ module Enumerable
   end
 
 end
+test = [1, 2, 3]
+test.my_each { |x|
+  puts x + 10
+}
