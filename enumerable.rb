@@ -55,12 +55,7 @@ module Enumerable
   def my_map(my_proc = false)
     item = []
     length.times do |x|
-      result =
-      if my_proc
-        my_proc.call(self[x])
-      else
-        yield(self[x])
-      end
+      result = my_proc ? my_proc.call(self[x]) : yield(self[x])
       item.push(result)
     end
     item
