@@ -52,10 +52,15 @@ module Enumerable
     return item
   end
 
-  def my_map
+  def my_map(my_proc = false)
     item = []
     (self.length).times do |x|
-      if(yield(self[x], y = nil))
+      if my_proc
+        result = my_proc.call(self[x])
+      else
+        result = yield(self[x])
+      end
+      if(result)
         item.push(true)
       else
         item.push(false)
@@ -72,12 +77,8 @@ module Enumerable
     return sum
   end
 
+  def multiply_els
+    self.my_inject { |sum, n| sum * n }
+  end
+
 end
-
-test = [5,3,7,4, 8, 9]
-
-test = [1,1,1,1]
-
-puts test.my_inject { |sum, n|
-  sum - n
-}
