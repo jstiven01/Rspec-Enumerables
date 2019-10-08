@@ -64,10 +64,20 @@ module Enumerable
     return item
   end
 
+  def my_inject
+    n = self[0]
+    (self.length - 1).times do |x|
+      n = yield(self[x + 1], n)
+    end
+    return n
+  end
+
 end
 
 test = [5,3,7,4, 8, 9]
 
-puts test.my_map { |x|
-  x > 5
+test = [1,1,1,1]
+
+puts test.my_inject { |x, n|
+  n + x
 }
