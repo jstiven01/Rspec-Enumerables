@@ -8,33 +8,33 @@ module Enumerable
   end
 
   def my_each_with_index
-    length.times { |x|
+    length.times do |x|
       yield(x, self[x])
-    }
+    end
   end
 
   def my_select
     item = []
     length.times do |x|
-      if yield(self[x])
-        item.push(self[x])
-      end
+      item.push(self[x]) if yield(self[x])
     end
     return item
   end
 
   def my_all
+    value = true
     length.times do |x|
-      return false unless yield(self[x])
+      value = false unless yield(self[x])
     end
-    true
+    value
   end
 
   def my_any
+    value = false
     length.times do |x|
-      return true if yield(self[x])
+     value = true if yield(self[x])
     end
-    false
+    value
   end
 
   def my_none
@@ -47,20 +47,20 @@ module Enumerable
   def my_count
     item = 0
     length.times do |x|
-      if yield(self[x], y = nil)
+      if yield(self[x])
         item += 1
       end
     end
-    return item
+    item
   end
 
   def my_map(my_proc = false)
     item = []
     length.times do |x|
-      if my_proc
-        result = my_proc.call(self[x])
+      result = if my_proc
+        my_proc.call(self[x])
       else
-        result = yield(self[x])
+        yield(self[x])
       end
       item.push(result)
     end
@@ -69,7 +69,7 @@ module Enumerable
 
   def my_inject
     sum = self[0]
-    (self.length - 1).times do |x|
+    (length - 1).times do |x|
       sum = yield(sum, self[x + 1])
     end
     sum
