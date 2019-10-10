@@ -68,13 +68,25 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     value
   end
 
+  def validata(var)
+    if var.instance_of? Regexp
+      return 'regex'
+    elsif var.respond_to?(:is_a?) && (var.is_a?(String) || var.is_a?(Integer))
+      return 'i_o_s'
+    elsif var.respond_to?(:is_a?)
+      return 'type'
+    end
+
+  end
+
   def test_var(var, field)
-    if field.instance_of? Regexp
-      return false if var.match(field)
-    elsif field.respond_to?(:is_a?) && (field.is_a?(String) || field.is_a?(Integer))
-      return false if field == var
-    elsif field.respond_to?(:is_a?) && (var.is_a? field)
-      return false
+    case validata(field)
+      when 'regex'
+        return false if var.match(field)
+      when 'i_o_s'
+        return false if field == var
+      when 'type'
+        return false if var.is_a? field
     end
 
     true
@@ -84,11 +96,8 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     return true if !block_given? && field.nil?
 
     length.times do |x|
-      if !field.nil?
-        return false if !test_var(self[x], field)
-      elsif block_given?
-        return false if yield(self[x])
-      end
+      return false if !field.nil? && !test_var(self[x], field)
+      return false if field.nil? && block_given? && yield(self[x])
     end
     true
   end
@@ -145,3 +154,22 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     my_inject { |sum, n| sum * n }
   end
 end
+
+#my_none
+
+false_array = [nil, false, nil, false]
+
+puts false_array.none?
+puts false_array.my_none
+
+array = [7, 8, 1, 4, 5, 0, 8, 4, 7, 6, 7, 8, 4, 8, 8, 6, 8, 0, 1, 7, 0, 2, 6, 6, 3, 1, 6, 6, 8, 5, 0, 2, 3, 7, 8, 7, 1, 5, 4, 4, 5, 1, 3, 5, 8, 7, 3, 3, 0, 0, 4, 1, 6, 2, 0, 4, 2, 1, 8, 3, 3, 6, 0, 8, 4, 4, 1, 6, 4, 6, 5, 3, 6, 6, 8, 6, 8, 7, 0, 6, 6, 2, 8, 8, 2, 1, 8, 5, 0, 5, 0, 3, 6, 4, 5, 8, 3, 3, 2, 1]
+puts array.none?(String)
+puts array.my_none(String)
+
+words = %w[dog door rod blade]
+puts words.none?(/z/)
+puts words.my_none(/z/)
+
+words[0] = 5
+puts words.none?(5)
+puts words.my_none(5)
