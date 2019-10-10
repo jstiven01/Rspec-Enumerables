@@ -68,39 +68,24 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     value
   end
 
-  def validata(var)
-    if var.instance_of? Regexp
-      return 'regex'
-    elsif var.respond_to?(:is_a?) && (var.is_a?(String) || var.is_a?(Integer))
-      return 'i_o_s'
-    elsif var.respond_to?(:is_a?)
-      return 'type'
+  def my_none(field = nil) # rubocop:disable Metrics/CyclomaticComplexity Metrics/PerceivedComplexity
+      return true if !block_given? && field.nil?
+
+      length.times do |x|
+        if !field.nil?
+          if field.instance_of? Regexp
+            return false if self[x].match(field)
+          elsif field.respond_to?(:is_a?) && (field.is_a?(String) || field.is_a?(Integer))
+            return false if field == self[x]
+          elsif field.respond_to?(:is_a?) && (self[x].is_a? field)
+            return false
+          end
+        elsif block_given?
+          return false if yield(self[x])
+        end
+      end
+      true
     end
-
-  end
-
-  def test_var(var, field)
-    case validata(field)
-      when 'regex'
-        return false if var.match(field)
-      when 'i_o_s'
-        return false if field == var
-      when 'type'
-        return false if var.is_a? field
-    end
-
-    true
-  end
-
-  def my_none(field = nil)
-    return true if !block_given? && field.nil?
-
-    length.times do |x|
-      return false if !field.nil? && !test_var(self[x], field)
-      return false if field.nil? && block_given? && yield(self[x])
-    end
-    true
-  end
 
   def my_count(field = nil)
     return length if !block_given? && !field
