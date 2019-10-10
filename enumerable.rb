@@ -2,18 +2,22 @@
 
 module Enumerable
   def my_each
+    return self.to_enum if !block_given?
     length.times do |x|
       yield(self[x])
     end
   end
 
   def my_each_with_index
+    return self.to_enum if !block_given?
     length.times do |x|
       yield(x, self[x])
     end
+    self
   end
 
   def my_select
+    return self.to_enum if !block_given?
     item = []
     length.times do |x|
       item.push(self[x]) if yield(self[x])
@@ -21,38 +25,77 @@ module Enumerable
     item
   end
 
-  def my_all
+  def my_all(field = nil)
+    return true if !block_given? && field == nil
     value = true
     length.times do |x|
-      value = false unless yield(self[x])
+      if field != nil
+        if field.instance_of? Regexp
+          value = false if !self[x].match(field)
+        elsif field.respond_to?(:is_a?) && (field.is_a?(String) || field.is_a?(Integer))
+          value = false if field != self[x]
+        else
+          value = false if field.respond_to?(:is_a?) && !(self[x].is_a? field)
+        end
+      else block_given?
+        value = false unless yield(self[x])
+      end
     end
     value
   end
 
-  def my_any
+  def my_any(field = nil)
+    return true if !block_given? && field == nil
     value = false
     length.times do |x|
-      value = true if yield(self[x])
+      if field != nil
+        if field.instance_of? Regexp
+          value = true if self[x].match(field)
+        elsif field.respond_to?(:is_a?) && (field.is_a?(String) || field.is_a?(Integer))
+          value = true if field == self[x]
+        else
+          value = true if field.respond_to?(:is_a?) && (self[x].is_a? field)
+        end
+      else block_given?
+        value = true if yield(self[x])
+      end
     end
     value
   end
 
-  def my_none
+  def my_none(field = nil)
+    return true if !block_given? && field == nil
     length.times do |x|
-      return false if yield(self[x])
+      if field != nil
+        if field.instance_of? Regexp
+          return false if self[x].match(field)
+        elsif field.respond_to?(:is_a?) && (field.is_a?(String) || field.is_a?(Integer))
+          return false if field == self[x]
+        else
+          return false if field.respond_to?(:is_a?) && (self[x].is_a? field)
+        end
+      else block_given?
+        return false if yield(self[x])
+      end
     end
     true
   end
 
-  def my_count
+  def my_count(field = nil)
+     return length if (!block_given? && !field)
     item = 0
     length.times do |x|
-      item += 1 if yield(self[x])
+      if field
+        item += 1 if field == self[x]
+      else
+        item += 1 if yield(self[x])
+      end
     end
     item
   end
 
   def my_map(my_proc = false)
+    return self.to_enum if !block_given?
     item = []
     length.times do |x|
       result = my_proc ? my_proc.call(self[x]) : yield(self[x])
@@ -61,10 +104,29 @@ module Enumerable
     item
   end
 
-  def my_inject
-    sum = self[0]
-    (length - 1).times do |x|
-      sum = yield(sum, self[x + 1])
+  def my_inject(field = nil)
+    arr = self.to_a
+    if field && field.respond_to?(:is_a?) && field.is_a?(Integer)
+      sum = field
+      d_m = 0
+    else
+      sum = arr[0]
+      d_m = 1
+    end
+
+    o = nil
+
+    if field && field.respond_to?(:is_a?) && field.is_a?(Symbol)
+      o = field.to_s
+      o.sub! ":", ""
+    end
+
+    (arr.length - d_m).times do |x|
+      if o
+        sum = sum.method(o).(arr[x+ d_m])
+      else
+        sum = yield(sum, arr[x + d_m])
+      end
     end
     sum
   end
