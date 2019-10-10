@@ -28,7 +28,7 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     item
   end
 
-  def my_all(field = nil)
+  def my_all(field = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     return true if !block_given? && field.nil?
 
     value = true
@@ -48,7 +48,7 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     value
   end
 
-  def my_any(field = nil)
+  def my_any(field = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     return true if !block_given? && field.nil?
 
     value = false
@@ -68,7 +68,7 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     value
   end
 
-  def my_none(field = nil) # rubocop:disable Metrics/CyclomaticComplexity Metrics/PerceivedComplexity
+  def my_none(field = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     return true if !block_given? && field.nil?
 
     length.times do |x|
