@@ -13,7 +13,7 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     return to_enum unless block_given?
 
     length.times do |x|
-      yield(x, self[x])
+      yield(self[x], x)
     end
     self
   end
