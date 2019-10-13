@@ -29,8 +29,6 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
   end
 
   def my_all(field = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    return true if !block_given? && field.nil?
-
     value = true
     length.times do |x|
       if !field.nil?
@@ -43,14 +41,14 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
         end
       elsif block_given?
         value = false unless yield(self[x])
+      else
+        value = false unless self[x]
       end
     end
     value
   end
 
   def my_any(field = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    return true if !block_given? && field.nil?
-
     value = false
     length.times do |x|
       if !field.nil?
@@ -63,14 +61,14 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
         end
       elsif block_given?
         value = true if yield(self[x])
+      elsif self[x]
+        value = true
       end
     end
     value
   end
 
   def my_none(field = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-    return true if !block_given? && field.nil?
-
     length.times do |x|
       if !field.nil?
         if field.instance_of? Regexp
@@ -82,6 +80,8 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
         end
       elsif block_given?
         return false if yield(self[x])
+      elsif self[x]
+        return false
       end
     end
     true
@@ -112,17 +112,21 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     item
   end
 
-  def my_inject(field = nil)
+  def my_inject(field = nil, second = nil) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     arr = to_a
+    o = nil
+
     if field&.respond_to?(:is_a?) && field&.is_a?(Integer)
       sum = field
       d_m = 0
+      if second&.respond_to?(:is_a?) && second&.is_a?(Symbol)
+        o = second.to_s
+        o.sub! ':', ''
+      end
     else
       sum = arr[0]
       d_m = 1
     end
-
-    o = nil
 
     if field&.respond_to?(:is_a?) && field&.is_a?(Symbol)
       o = field.to_s
