@@ -193,4 +193,15 @@ RSpec.describe Enumerable do
       expect(array_numbers.my_count(&block)).to eq(5)
     end
   end
+
+  describe '#my_map' do
+    it "returns an enumerator if a block wasn't given" do
+      expect(array_numbers.my_map).to be_an(Enumerator)
+    end
+
+    it 'returns a new array with the operation received in the given block applied to every element ' do
+      block = proc { |x| x * 10 }
+      expect(array_numbers.my_map(&block)).to eq(array_numbers.map(&block))
+    end
+  end
 end
