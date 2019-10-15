@@ -4,6 +4,7 @@ require_relative '../lib/enumerable'
 
 RSpec.describe Enumerable do
   let(:array_numbers) { [5, 2, 4, 3, 8, 9, 4, 3] }
+  let(:false_array) { [false, nil, false, nil] }
   let(:true_array) { [1, true, 'hi', []] }
   let(:words_array) { %w[dog door rod blade] }
   let(:three_array) { [3, 3, 3, 3] }
@@ -84,6 +85,50 @@ RSpec.describe Enumerable do
 
     it 'returns false when the array has at least one element different to the number given as a parameter' do
       expect(three_array.my_all(5)).to eq(false)
+    end
+  end
+
+  describe '#my_any' do
+    it 'returns true if any element matches the block given' do
+      true_block = proc { |num| num <= 5 }
+      expect(array_numbers.my_any(&true_block)).to eq(true)
+    end
+
+    it "returns false if all the elements doesn't match the block given" do
+      false_block = proc { |num| num <= -150 }
+      expect(array_numbers.my_any(&false_block)).to eq(false)
+    end
+
+    it "returns true if block wasn't given and any of the elements are true" do
+      expect(array_numbers.my_any).to eq(true)
+    end
+
+    it "returns false if block wasn't given and all the elements are false" do
+      expect(false_array.my_any).to eq(false)
+    end
+
+    it 'return true if any of the elements are the type of class given as a parameter' do
+      expect(array_numbers.my_any(Integer)).to eq(true)
+    end
+
+    it 'returns false if all of the elements are no the type of class given as a parameter' do
+      expect(words_array.my_any(Integer)).to eq(false)
+    end
+
+    it 'return true if any of the elemnts matches the Regex given as a parameter' do
+      expect(words_array.my_any(/d/)).to eq(true)
+    end
+
+    it 'return false if all the elemnts does not matches the Regex given as a parameter' do
+      expect(words_array.my_any(/z/)).to eq(false)
+    end
+
+    it 'return true if any of the elements is equal to a given value as a parameter' do
+      expect(three_array.my_any(3)).to eq(true)
+    end
+
+    it "return true if all of elements aren't equal to a given value as a parameter" do
+      expect(three_array.my_any(-150)).to eq(false)
     end
   end
 end
