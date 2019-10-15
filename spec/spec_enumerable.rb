@@ -8,6 +8,7 @@ RSpec.describe Enumerable do
   let(:true_array) { [1, true, 'hi', []] }
   let(:words_array) { %w[dog door rod blade] }
   let(:three_array) { [3, 3, 3, 3] }
+
   describe '#my_each' do
     it 'returns an iteration of each element of an array' do
       result_my = 0
@@ -175,6 +176,21 @@ RSpec.describe Enumerable do
 
     it 'returns false when the array has at least one element different to the number given as a parameter' do
       expect(three_array.my_none(3)).to eq(false)
+    end
+  end
+
+  describe '#my_count' do
+    it "returns a count of the array if a block wasn't given" do
+      expect(array_numbers.my_count).to eq(8)
+    end
+
+    it 'returns a count of the elements that matches the given parameter' do
+      expect(array_numbers.my_count(4)).to eq(2)
+    end
+
+    it 'returns a count of the elements that matches the given block' do
+      block = proc { |x| x > 3 }
+      expect(array_numbers.my_count(&block)).to eq(5)
     end
   end
 end
