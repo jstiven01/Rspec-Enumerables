@@ -55,8 +55,14 @@ RSpec.describe Enumerable do
   end
 
   describe '#my_all' do
-    it "returns true when the array has ALL elements of the same type and if block wasn't given" do
-      expect(array_numbers.my_all).to eq(true)
+    it 'returns true if ALL elements match the block given' do
+      true_block = proc { |num| num >= 0 }
+      expect(array_numbers.my_all(&true_block)).to eq(true)
+    end
+
+    it "returns false if at least one element doesn't match the block given" do
+      false_block = proc { |num| num <= 5 }
+      expect(array_numbers.my_all(&false_block)).to eq(false)
     end
 
     it "returns true when the array has ALL elements of the different type (Truthy value) and if block wasn't given" do
@@ -129,6 +135,46 @@ RSpec.describe Enumerable do
 
     it "return true if all of elements aren't equal to a given value as a parameter" do
       expect(three_array.my_any(-150)).to eq(false)
+    end
+  end
+
+  describe '#my_none' do
+    it 'returns true if NONE elements match the block given' do
+      true_block = proc { |num| num <= 0 }
+      expect(array_numbers.my_none(&true_block)).to eq(true)
+    end
+
+    it "returns false if at least one element doesn't match the block given" do
+      false_block = proc { |num| num <= 5 }
+      expect(array_numbers.my_none(&false_block)).to eq(false)
+    end
+
+    it "returns true when the array has NONE elements of the different type (Truthy value) and if block wasn't given" do
+      expect(false_array.my_none).to eq(true)
+    end
+
+    it 'returns true when the array has NONE elements of the same type of the class given as a parameter' do
+      expect(words_array.my_none(Integer)).to eq(true)
+    end
+
+    it 'returns false when the array has at least one different element of the type of the class given as a param' do
+      expect(true_array.my_none(Integer)).to eq(false)
+    end
+
+    it 'returns true when the array has NONE elements with the word given as a Regex parameter' do
+      expect(words_array.my_none(/z/)).to eq(true)
+    end
+
+    it 'returns false when the array has at least one element without the word given as a Regex parameter' do
+      expect(words_array.my_none(/d/)).to eq(false)
+    end
+
+    it 'returns true when the array has NONE elements equal to the number given as a parameter' do
+      expect(three_array.my_none(5)).to eq(true)
+    end
+
+    it 'returns false when the array has at least one element different to the number given as a parameter' do
+      expect(three_array.my_none(3)).to eq(false)
     end
   end
 end
