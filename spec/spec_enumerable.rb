@@ -8,6 +8,7 @@ RSpec.describe Enumerable do
   let(:true_array) { [1, true, 'hi', []] }
   let(:words_array) { %w[dog door rod blade] }
   let(:three_array) { [3, 3, 3, 3] }
+  let(:range_numbers) { Range.new(5, 50) }
 
   describe '#my_each' do
     it 'returns an iteration of each element of an array' do
@@ -202,6 +203,35 @@ RSpec.describe Enumerable do
     it 'returns a new array with the operation received in the given block applied to every element ' do
       block = proc { |x| x * 10 }
       expect(array_numbers.my_map(&block)).to eq(array_numbers.map(&block))
+    end
+  end
+
+  describe '#my_inject' do
+    it 'returns an operation on each element of the array given a block' do
+      block = proc { |prod, n| prod * n }
+      expect(array_numbers.my_inject(&block)).to eq(array_numbers.inject(&block))
+    end
+
+    it 'returns an operation on each element of the array given a block and a starting index as a parameter' do
+      block = proc { |prod, n| prod + n }
+      expect(array_numbers.my_inject(&block)).to eq(array_numbers.inject(&block))
+    end
+
+    it 'returns an operation betwen every element on the array with the symbol given as a paramater' do
+      array = [5, 5, 5, 5]
+      expect(array.my_inject(:+)).to eq(20)
+    end
+
+    it 'returns an operation betwen every element on the array with starting index and the symbol given as a param' do
+      array = [5, 5, 5, 5]
+      expect(array.my_inject(3, :+)).to eq(23)
+    end
+  end
+
+  describe '#multiply_els' do
+    it 'returns the result of all the elements multiplied together' do
+      array = [2, 2, 2]
+      expect(array.multiply_els).to eq(8)
     end
   end
 end
