@@ -38,4 +38,15 @@ RSpec.describe Enumerable do
       expect(array_numbers.my_each_with_index).to be_an(Enumerator)
     end
   end
+
+  describe '#my_select' do
+    it 'returns a copy of the array that matches the given parameters or given block' do
+      block = proc { |x| x > 4 }
+      expect(array_numbers.my_select(&block)).to eq(array_numbers.select(&block))
+    end
+
+    it "returns an enumerable if block wasn't given" do
+      expect(array_numbers.my_select).to be_an(Enumerator)
+    end
+  end
 end
