@@ -10,4 +10,5 @@ This project consists of replicate enumerable methods of ruby. you can find the 
 Ruby
 
 ## Author
-Luis Preza https://github.com/men32z 
+Luis Preza https://github.com/men32z <br>
+Johan Tinjaca https://github.com/jstiven01
